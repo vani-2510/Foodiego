@@ -1,0 +1,20 @@
+
+# Build files
+/build/
+/target/
+*.class
+
+# Logs
+*.log
+
+# IDE temporary files
+.metadata/
+*.swp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local database credentials
+db-credentials.properties
+application-local.properties

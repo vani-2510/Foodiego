@@ -1,0 +1,812 @@
+
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%
+    String contextPath = request.getContextPath();
+    boolean isLoggedIn = session.getAttribute("userId") != null;
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodieGo | Order Food Online</title>
+
+<style>
+:root {
+	--background: #19191f;
+	--surface: #24242d;
+	--pink: #ff386b;
+	--text: #ffffff;
+	--muted: #b4b4c2;
+	--border: #393943;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: var(--background);
+	color: var(--text);
+	line-height: 1.6;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+button, input {
+	font: inherit;
+}
+
+/* Navigation */
+.navbar {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	min-height: 76px;
+	padding: 15px 7%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 25px;
+	background: #222128;
+	border-bottom: 1px solid var(--border);
+}
+
+.logo {
+	color: var(--pink);
+	font-size: 29px;
+	font-weight: 800;
+	letter-spacing: -1px;
+}
+
+.nav-links {
+	display: flex;
+	align-items: center;
+	gap: 30px;
+}
+
+.nav-links a {
+	color: #eeeeF4;
+	font-size: 15px;
+	transition: color 0.2s;
+}
+
+.nav-links a:hover {
+	color: var(--pink);
+}
+
+.nav-links .signup-btn, .nav-links .profile-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 19px;
+	border-radius: 8px;
+	background: var(--pink);
+	color: white;
+	font-weight: bold;
+}
+
+.nav-links .signup-btn:hover, .nav-links .profile-btn:hover {
+	background: #e9275b;
+	color: white;
+	transform: translateY(-2px);
+}
+
+/* Video hero section */
+.hero {
+	position: relative;
+	isolation: isolate;
+	min-height: 570px;
+	padding: 75px 7% 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	background: #19191f;
+}
+
+.hero-video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	z-index: -2;
+}
+
+.hero-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgba(0, 0, 0, 0.82),
+		rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.72));
+	z-index: -1;
+}
+
+.hero-content {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 850px;
+	margin: auto;
+	text-align: center;
+}
+
+.hero-tag {
+	display: inline-block;
+	padding: 7px 15px;
+	margin-bottom: 20px;
+	color: #ff9bb4;
+	background: rgba(255, 56, 107, 0.12);
+	border: 1px solid rgba(255, 56, 107, 0.25);
+	border-radius: 30px;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.hero h1 {
+	margin-bottom: 18px;
+	font-size: clamp(36px, 5vw, 58px);
+	line-height: 1.13;
+	letter-spacing: -1.8px;
+}
+
+.hero h1 span {
+	color: var(--pink);
+}
+
+.hero p {
+	max-width: 600px;
+	margin: 0 auto 30px;
+	color: #eeeeee;
+	font-size: 17px;
+}
+
+/* Search */
+.search-box {
+	display: flex;
+	gap: 10px;
+	max-width: 650px;
+	margin: 0 auto;
+	padding: 8px;
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.search-box input {
+	flex: 1;
+	min-width: 0;
+	padding: 13px;
+	border: none;
+	outline: none;
+	color: #222;
+	background: transparent;
+	font-size: 15px;
+}
+
+.search-box button, .primary-btn {
+	padding: 12px 22px;
+	border: none;
+	border-radius: 8px;
+	background: var(--pink);
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.search-box button:hover, .primary-btn:hover {
+	background: #e9275b;
+}
+
+.hero-note {
+	margin-top: 18px;
+	color: #eeeeee;
+	font-size: 13px;
+}
+
+/* Main sections */
+.section {
+	padding: 55px 7%;
+}
+
+.section-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 15px;
+	margin-bottom: 27px;
+}
+
+.section-heading h2 {
+	font-size: clamp(23px, 3vw, 30px);
+	line-height: 1.3;
+}
+
+.section-heading p {
+	color: var(--muted);
+	font-size: 14px;
+}
+
+.pink-text {
+	color: var(--pink);
+}
+
+/* Food categories */
+.category-grid {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 18px;
+}
+
+.category-card {
+	min-width: 0;
+	padding: 22px 10px;
+	text-align: center;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 14px;
+	transition: transform 0.2s, border-color 0.2s;
+}
+
+.category-card:hover {
+	transform: translateY(-5px);
+	border-color: var(--pink);
+}
+
+.category-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 76px;
+	height: 76px;
+	margin: 0 auto 12px;
+	background: #30303b;
+	border-radius: 50%;
+	font-size: 38px;
+}
+
+.category-card h3 {
+	font-size: 14px;
+}
+
+/* Promotional banner */
+.offer-banner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 25px;
+	padding: 32px 38px;
+	border: 1px solid rgba(255, 56, 107, 0.35);
+	border-radius: 18px;
+	background: linear-gradient(110deg, rgba(255, 56, 107, 0.18),
+		rgba(36, 36, 45, 0.98));
+}
+
+.offer-banner h2 {
+	margin-bottom: 8px;
+	font-size: 27px;
+}
+
+.offer-banner p {
+	color: var(--muted);
+}
+
+.offer-icon {
+	font-size: 62px;
+}
+
+.primary-btn {
+	display: inline-block;
+	margin-top: 20px;
+	padding: 12px 20px;
+}
+
+/* Restaurant cards */
+.restaurant-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 22px;
+}
+
+.restaurant-card {
+	overflow: hidden;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 15px;
+	transition: transform 0.2s, border-color 0.2s;
+}
+
+.restaurant-card:hover {
+	transform: translateY(-4px);
+	border-color: var(--pink);
+}
+
+.restaurant-image {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 175px;
+	background: #30303b;
+	font-size: 64px;
+}
+
+.restaurant-info {
+	padding: 20px;
+}
+
+.restaurant-info h3 {
+	margin-bottom: 7px;
+	font-size: 19px;
+}
+
+.restaurant-info p {
+	margin-bottom: 12px;
+	color: var(--muted);
+	font-size: 14px;
+}
+
+.restaurant-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	font-size: 13px;
+}
+
+.rating {
+	color: #6fe0a6;
+	font-weight: bold;
+}
+
+.browse-link {
+	display: inline-block;
+	margin-top: 17px;
+	color: var(--pink);
+	font-size: 14px;
+	font-weight: bold;
+}
+
+/* Call to action */
+.cta {
+	padding: 55px 7%;
+	text-align: center;
+	background: #222128;
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+}
+
+.cta h2 {
+	margin-bottom: 10px;
+	font-size: 30px;
+}
+
+.cta p {
+	color: var(--muted);
+}
+
+/* Footer */
+footer {
+	padding: 30px 7%;
+	background: var(--background);
+}
+
+.footer-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+
+.footer-brand p {
+	margin-top: 6px;
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.footer-links {
+	display: flex;
+	gap: 22px;
+	flex-wrap: wrap;
+}
+
+.footer-links a {
+	color: var(--muted);
+	font-size: 14px;
+}
+
+.footer-links a:hover {
+	color: var(--pink);
+}
+
+.copyright {
+	margin-top: 24px;
+	padding-top: 18px;
+	border-top: 1px solid var(--border);
+	color: var(--muted);
+	font-size: 12px;
+	text-align: center;
+}
+
+/* Responsive design */
+@media ( max-width : 900px) {
+	.category-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	.restaurant-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	.navbar {
+		padding-left: 5%;
+		padding-right: 5%;
+	}
+	.nav-links {
+		gap: 18px;
+	}
+}
+
+@media ( max-width : 600px) {
+	.navbar {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 12px;
+	}
+	.nav-links {
+		width: 100%;
+		gap: 17px;
+		flex-wrap: wrap;
+	}
+	.nav-links a {
+		font-size: 13px;
+	}
+	.hero {
+		min-height: 550px;
+		padding: 55px 5%;
+	}
+	.hero h1 {
+		letter-spacing: -1px;
+	}
+	.search-box {
+		flex-direction: column;
+		background: transparent;
+		box-shadow: none;
+	}
+	.search-box input {
+		padding: 15px;
+		background: white;
+		border-radius: 8px;
+	}
+	.search-box button {
+		width: 100%;
+	}
+	.section {
+		padding: 40px 5%;
+	}
+	.category-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
+	}
+	.restaurant-grid {
+		grid-template-columns: 1fr;
+	}
+	.section-heading {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+	.offer-banner {
+		align-items: flex-start;
+		flex-direction: column;
+		padding: 25px;
+	}
+	.offer-icon {
+		display: none;
+	}
+	.footer-content {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+}
+</style>
+</head>
+
+<body>
+
+	<!-- Navigation -->
+	<header class="navbar">
+
+		<a href="<%= contextPath %>/index.jsp" class="logo">FoodieGo</a>
+
+		<nav class="nav-links">
+
+			<a href="<%= contextPath %>/index.jsp">Home</a> <a
+				href="<%= contextPath %>/callRestaurantServlet">Restaurants</a>
+
+			<% if (isLoggedIn) { %>
+
+			<a href="<%= contextPath %>/profile.jsp" class="profile-btn"> <span
+				aria-hidden="true">👤</span> Profile
+			</a>
+
+			<% } else { %>
+
+			<a href="<%= contextPath %>/login.html">Login</a> <a
+				href="<%= contextPath %>/register.html" class="signup-btn"> Sign
+				Up </a>
+
+			<% } %>
+
+		</nav>
+	</header>
+
+	<main>
+
+		<!-- Hero section with background video -->
+		<section class="hero">
+
+			<video class="hero-video" id="heroVideo" autoplay muted loop
+				playsinline preload="auto"
+				aria-label="FoodieGo food background video">
+
+				<source src="<%= contextPath %>/videos/foodie.mp4" type="video/mp4">
+
+				Your browser does not support HTML video.
+			</video>
+
+			<div class="hero-overlay"></div>
+
+			<div class="hero-content">
+
+				<span class="hero-tag">GOOD FOOD. GOOD MOOD.</span>
+
+				<h1>
+					Your cravings,<br> <span>delivered with love.</span>
+				</h1>
+
+				<p>Discover amazing meals, explore your favorite cuisines, and get delicious food delivered right to your doorstep.</p>
+
+				<form class="search-box" id="searchForm">
+
+					<input type="search" id="foodSearch" placeholder="Search for restaurants or food" aria-label="Search restaurants or food">
+
+					<button type="submit">Find Food</button>
+
+				</form>
+
+				<div class="hero-note">Delicious choices are just a few clicks away.</div>
+
+			</div>
+		</section>
+
+		<!-- Food categories -->
+		<section class="section">
+
+			<div class="section-heading">
+				<div>
+					<h2>
+						What's on your <span class="pink-text">mind?</span>
+					</h2>
+					<p>Choose a craving and start exploring.</p>
+				</div>
+			</div>
+
+			<div class="category-grid">
+
+				<a class="category-card"
+					href="<%= contextPath %>/callRestaurantServlet">
+					<div class="category-icon">🍛</div>
+					<h3>Biryani</h3>
+				</a> <a class="category-card"
+					href="<%= contextPath %>/callRestaurantServlet">
+					<div class="category-icon">🍕</div>
+					<h3>Pizza</h3>
+				</a> <a class="category-card"
+					href="<%= contextPath %>/callRestaurantServlet">
+					<div class="category-icon">🍔</div>
+					<h3>Burgers</h3>
+				</a> <a class="category-card"
+					href="<%= contextPath %>/callRestaurantServlet">
+					<div class="category-icon">🥗</div>
+					<h3>Healthy Food</h3>
+				</a> <a class="category-card"
+					href="<%= contextPath %>/callRestaurantServlet">
+					<div class="category-icon">🍜</div>
+					<h3>Noodles</h3>
+				</a> <a class="category-card"
+					href="<%= contextPath %>/callRestaurantServlet">
+					<div class="category-icon">🍰</div>
+					<h3>Desserts</h3>
+				</a>
+
+			</div>
+		</section>
+
+		<!-- Offers -->
+		<section class="section" style="padding-top: 0;">
+
+			<div class="offer-banner">
+
+				<div>
+					<h2>Something delicious is waiting!</h2>
+
+					<p>Explore our restaurant collection and discover your next	favorite meal.</p>
+
+					<a href="<%= contextPath %>/callRestaurantServlet" class="primary-btn"> Explore Restaurants → </a>
+				</div>
+
+				<div class="offer-icon">🍽️</div>
+
+			</div>
+		</section>
+
+		<!-- Restaurant discovery -->
+		<section class="section" id="restaurants">
+
+			<div class="section-heading">
+
+				<div>
+					<h2>Discover great food</h2>
+					<p>Explore restaurants and find your next favorite.</p>
+				</div>
+
+				<a href="<%= contextPath %>/callRestaurantServlet"
+					class="browse-link"> View all restaurants → </a>
+
+			</div>
+
+			<div class="restaurant-grid">
+
+				<article class="restaurant-card">
+					<div class="restaurant-image">🍛</div>
+
+					<div class="restaurant-info">
+						<h3>Authentic Biryani</h3>
+
+						<p>Flavorful rice, aromatic spices and delicious meals.</p>
+
+						<div class="restaurant-meta">
+							<span class="rating">★ Popular choice</span> <span>Indian
+								cuisine</span>
+						</div>
+
+						<a href="<%= contextPath %>/callRestaurantServlet"
+							class="browse-link"> Explore menu → </a>
+					</div>
+				</article>
+
+				<article class="restaurant-card">
+					<div class="restaurant-image">🍕</div>
+
+					<div class="restaurant-info">
+						<h3>Pizza Corner</h3>
+
+						<p>Cheesy pizzas and tasty options for every craving.</p>
+
+						<div class="restaurant-meta">
+							<span class="rating">★ Popular choice</span> <span>Italian
+								cuisine</span>
+						</div>
+
+						<a href="<%= contextPath %>/callRestaurantServlet"
+							class="browse-link"> Explore menu → </a>
+					</div>
+				</article>
+
+				<article class="restaurant-card">
+					<div class="restaurant-image">🍔</div>
+
+					<div class="restaurant-info">
+						<h3>Burger House</h3>
+
+						<p>Juicy burgers, crispy fries and satisfying bites.</p>
+
+						<div class="restaurant-meta">
+							<span class="rating">★ Popular choice</span> <span>Fast
+								food</span>
+						</div>
+
+						<a href="<%= contextPath %>/callRestaurantServlet"
+							class="browse-link"> Explore menu → </a>
+					</div>
+				</article>
+
+			</div>
+		</section>
+
+		<!-- Call to action -->
+		<section class="cta">
+
+			<h2>Ready to satisfy your cravings?</h2>
+
+			<p>Your next delicious meal is waiting to be discovered.</p>
+
+			<a href="<%= contextPath %>/callRestaurantServlet"
+				class="primary-btn"> Order Food Now </a>
+
+		</section>
+
+	</main>
+
+	<!-- Footer -->
+	<footer>
+
+		<div class="footer-content">
+
+			<div class="footer-brand">
+				<a href="<%= contextPath %>/index.jsp" class="logo"> FoodieGo </a>
+
+				<p>Fresh food, delivered with love.</p>
+			</div>
+
+			<div class="footer-links">
+
+				<a href="<%= contextPath %>/index.jsp">Home</a> <a href="<%= contextPath %>/callRestaurantServlet"> Restaurants </a>
+
+				<% if (isLoggedIn) { %>
+
+				<a href="<%= contextPath %>/profile.jsp">Profile</a>
+
+				<% } else { %>
+
+				<a href="<%= contextPath %>/login.html">Login</a> <a href="<%= contextPath %>/register.html"> Create Account </a>
+
+				<% } %>
+
+			</div>
+		</div>
+
+		<div class="copyright">&copy; 2026 FoodieGo. All rights reserved.</div>
+
+	</footer>
+
+	<script>
+/* Restaurant and food search */
+document.getElementById("searchForm").addEventListener( "submit", function(event) {
+
+        event.preventDefault();
+
+        const input = document.getElementById("foodSearch");
+        const query = input.value.trim();
+
+        if (!query) {
+            input.focus();
+            input.placeholder = "Please enter a restaurant or food name";
+            return;
+        }
+
+        window.location.href = "<%= contextPath %>/callRestaurantServlet?search=" + encodeURIComponent(query);
+    }
+);
+
+/* Attempt muted autoplay when the page loads */
+document.addEventListener("DOMContentLoaded", function() {
+
+    const video = document.getElementById("heroVideo");
+
+    if (video) {
+        video.muted = true;
+
+        const playPromise = video.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(function(error) {
+                console.log("Video autoplay was blocked by the browser:", error);
+            });
+        }
+    }
+});
+</script>
+
+</body>
+</html>

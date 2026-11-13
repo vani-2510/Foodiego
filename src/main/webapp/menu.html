@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodieGo | Restaurant Menu</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #19191f;
+    --surface: #24242d;
+    --pink: #ff386b;
+    --text: #ffffff;
+    --muted: #b4b4c2;
+    --green: #23c982;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.navbar {
+    min-height: 72px;
+    padding: 16px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #222128;
+    border-bottom: 1px solid #35353f;
+}
+
+.logo {
+    color: var(--pink);
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.nav-links a:hover,
+.back-link:hover {
+    color: var(--pink);
+}
+
+.restaurant-banner {
+    padding: 45px 7%;
+    background:
+        linear-gradient(90deg, rgba(20,15,15,.95), rgba(20,15,15,.55)),
+        url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80")
+        center/cover no-repeat;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #eeeeee;
+}
+
+.restaurant-banner h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    margin-bottom: 14px;
+}
+
+.restaurant-details {
+    color: #eeeeee;
+    line-height: 2;
+}
+
+.restaurant-details .rating {
+    color: var(--green);
+    font-weight: bold;
+}
+
+.toolbar {
+    padding: 20px 7%;
+    background: #202027;
+    border-bottom: 1px solid #34343d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.toolbar h2 {
+    font-size: 23px;
+}
+
+.search-box {
+    width: 320px;
+    max-width: 100%;
+    padding: 12px 15px;
+    background: var(--surface);
+    border: 1px solid #454550;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1450px;
+    margin: auto;
+    padding: 32px 7% 60px;
+}
+
+.section-heading {
+    margin-bottom: 20px;
+}
+
+.section-heading h2 {
+    font-size: 25px;
+    margin-bottom: 7px;
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.menu-card {
+    display: flex;
+    gap: 18px;
+    padding: 15px;
+    background: var(--surface);
+    border: 1px solid #33333e;
+    border-radius: 12px;
+    min-width: 0;
+    transition: transform .2s, border-color .2s;
+}
+
+.menu-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--pink);
+}
+
+.food-image {
+    width: 155px;
+    min-width: 155px;
+    height: 155px;
+    object-fit: cover;
+    border-radius: 9px;
+    background: #30303a;
+}
+
+.food-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.food-type {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--green);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 9px;
+}
+
+.food-type span {
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+}
+
+.food-type.nonveg {
+    border-color: #ff6262;
+}
+
+.food-type.nonveg span {
+    background: #ff6262;
+}
+
+.food-info h3 {
+    font-size: 17px;
+    line-height: 1.4;
+    margin-bottom: 7px;
+}
+
+.description {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 9px;
+}
+
+.food-rating {
+    font-size: 13px;
+    color: var(--green);
+    margin-bottom: 12px;
+}
+
+.food-bottom {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.add-button {
+    border: 1px solid var(--pink);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--pink);
+    font-weight: bold;
+    padding: 9px 19px;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background: var(--pink);
+    color: white;
+}
+
+.menu-note {
+    margin-top: 30px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+footer {
+    padding: 24px;
+    text-align: center;
+    background: #222128;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+footer span {
+    color: var(--pink);
+}
+
+@media (max-width: 900px) {
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding-left: 4%;
+        padding-right: 4%;
+    }
+}
+
+@media (max-width: 520px) {
+    .navbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .menu-card {
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .food-image {
+        width: 105px;
+        min-width: 105px;
+        height: 125px;
+    }
+
+    .food-info h3 {
+        font-size: 15px;
+    }
+
+    .description {
+        font-size: 12px;
+    }
+
+    .price {
+        font-size: 16px;
+    }
+
+    .add-button {
+        padding: 8px 12px;
+    }
+
+    .toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="index.html" class="logo">FoodieGo</a>
+
+    <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="restaurant.html">Restaurants</a>
+        <a href="login.html">Login</a>
+        <a href="profile.html">Profile</a>
+    </nav>
+</header>
+
+<section class="restaurant-banner">
+    <a href="restaurant.html" class="back-link">
+        &#8592; Back to Restaurants
+    </a>
+
+    <h1>Paradise Biriyani</h1>
+
+    <div class="restaurant-details">
+        <span class="rating">&#9733; 4.3 (1,200+ ratings)</span>
+        &nbsp; | &nbsp; 35 mins
+        &nbsp; | &nbsp; Biryani and Indian food
+        <br>
+        Whitefield, Bengaluru
+    </div>
+</section>
+
+<section class="toolbar">
+    <h2>Our Menu <span style="color:#b4b4c2;font-size:14px;">(20 items)</span></h2>
+
+    <input class="search-box"
+           type="search"
+           placeholder="Search for dishes..."
+           aria-label="Search for dishes">
+</section>
+
+<main class="container">
+
+    <div class="section-heading">
+        <h2>Recommended Dishes</h2>
+        <p>Freshly prepared favourites for your next meal</p>
+    </div>
+
+    <section class="menu-grid">
+
+        <!-- 1 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1563379091339-03246963d96c?auto=format&fit=crop&w=500&q=80"
+                 alt="Chicken Biryani">
+            <div class="food-info">
+                <span class="food-type nonveg"><span></span></span>
+                <h3>Chicken Biryani</h3>
+                <p class="description">Aromatic basmati rice with spicy chicken and traditional herbs.</p>
+                <p class="food-rating">&#9733; 4.8 (210 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;280</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 2 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&w=500&q=80"
+                 alt="Mutton Biryani">
+            <div class="food-info">
+                <span class="food-type nonveg"><span></span></span>
+                <h3>Mutton Biryani</h3>
+                <p class="description">Tender mutton cooked with fragrant rice and rich spices.</p>
+                <p class="food-rating">&#9733; 4.7 (185 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;350</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 3 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=500&q=80"
+                 alt="Paneer Biryani">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Paneer Biryani</h3>
+                <p class="description">Soft paneer pieces with basmati rice and aromatic masala.</p>
+                <p class="food-rating">&#9733; 4.4 (98 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;220</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 4 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=500&q=80"
+                 alt="Chicken 65">
+            <div class="food-info">
+                <span class="food-type nonveg"><span></span></span>
+                <h3>Chicken 65</h3>
+                <p class="description">Crispy, spicy chicken bites with curry leaves and seasoning.</p>
+                <p class="food-rating">&#9733; 4.6 (150 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;240</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 5 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?auto=format&fit=crop&w=500&q=80"
+                 alt="Hyderabadi Chicken Biryani">
+            <div class="food-info">
+                <span class="food-type nonveg"><span></span></span>
+                <h3>Hyderabadi Chicken Biryani</h3>
+                <p class="description">Classic dum biryani layered with chicken and fried onions.</p>
+                <p class="food-rating">&#9733; 4.8 (190 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;260</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 6 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1599043513900-ed6fe01d3833?auto=format&fit=crop&w=500&q=80"
+                 alt="Vegetable Biryani">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Veg Biryani</h3>
+                <p class="description">Basmati rice with fresh vegetables, herbs and mild spices.</p>
+                <p class="food-rating">&#9733; 4.3 (85 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;180</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 7 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=500&q=80"
+                 alt="Chicken Curry">
+            <div class="food-info">
+                <span class="food-type nonveg"><span></span></span>
+                <h3>Chicken Curry</h3>
+                <p class="description">Homestyle chicken curry simmered in a spicy gravy.</p>
+                <p class="food-rating">&#9733; 4.5 (120 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;260</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 8 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=500&q=80"
+                 alt="Butter Naan">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Butter Naan</h3>
+                <p class="description">Soft Indian flatbread brushed with melted butter.</p>
+                <p class="food-rating">&#9733; 4.4 (90 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;45</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 9 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=500&q=80"
+                 alt="Paneer Butter Masala">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Paneer Butter Masala</h3>
+                <p class="description">Paneer cubes in a creamy tomato and butter gravy.</p>
+                <p class="food-rating">&#9733; 4.6 (110 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;230</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 10 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80"
+                 alt="Chicken Burger">
+            <div class="food-info">
+                <span class="food-type nonveg"><span></span></span>
+                <h3>Chicken Burger</h3>
+                <p class="description">Juicy chicken patty with lettuce and house sauce.</p>
+                <p class="food-rating">&#9733; 4.5 (140 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;180</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 11 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1520072959219-c595dc870360?auto=format&fit=crop&w=500&q=80"
+                 alt="Veg Burger">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Veg Burger</h3>
+                <p class="description">Crispy vegetable patty with fresh vegetables and sauce.</p>
+                <p class="food-rating">&#9733; 4.2 (70 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;120</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 12 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=500&q=80"
+                 alt="French Fries">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>French Fries</h3>
+                <p class="description">Golden, crispy potato fries with a pinch of seasoning.</p>
+                <p class="food-rating">&#9733; 4.3 (95 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;100</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 13 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?auto=format&fit=crop&w=500&q=80"
+                 alt="Margherita Pizza">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Margherita Pizza</h3>
+                <p class="description">Classic pizza topped with tomato sauce and mozzarella.</p>
+                <p class="food-rating">&#9733; 4.5 (160 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;249</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 14 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80"
+                 alt="Farmhouse Pizza">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Farmhouse Pizza</h3>
+                <p class="description">Loaded with capsicum, onion, tomato and cheese.</p>
+                <p class="food-rating">&#9733; 4.6 (130 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;349</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 15 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80"
+                 alt="Chicken Noodles">
+            <div class="food-info">
+                <span class="food-type nonveg"><span></span></span>
+                <h3>Chicken Noodles</h3>
+                <p class="description">Stir-fried noodles with chicken and crunchy vegetables.</p>
+                <p class="food-rating">&#9733; 4.5 (105 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;210</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 16 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=500&q=80"
+                 alt="Veg Fried Rice">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Veg Fried Rice</h3>
+                <p class="description">Wok-fried rice with vegetables and aromatic seasoning.</p>
+                <p class="food-rating">&#9733; 4.2 (80 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;160</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 17 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=500&q=80"
+                 alt="Masala Dosa">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Masala Dosa</h3>
+                <p class="description">Crispy dosa stuffed with potato masala, served with chutney.</p>
+                <p class="food-rating">&#9733; 4.5 (125 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;100</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 18 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=500&q=80"
+                 alt="Idli Sambar">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Idli Sambar</h3>
+                <p class="description">Soft steamed idlis served with hot sambar and chutney.</p>
+                <p class="food-rating">&#9733; 4.3 (88 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;70</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 19 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80"
+                 alt="Chocolate Ice Cream">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Chocolate Ice Cream</h3>
+                <p class="description">Rich chocolate ice cream for a sweet finish.</p>
+                <p class="food-rating">&#9733; 4.6 (100 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;90</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- 20 -->
+        <article class="menu-card">
+            <img class="food-image"
+                 src="https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=500&q=80"
+                 alt="Fresh Lime Juice">
+            <div class="food-info">
+                <span class="food-type"><span></span></span>
+                <h3>Fresh Lime Juice</h3>
+                <p class="description">Refreshing lime drink served chilled.</p>
+                <p class="food-rating">&#9733; 4.4 (75 ratings)</p>
+                <div class="food-bottom">
+                    <span class="price">&#8377;60</span>
+                    <button class="add-button" type="button">ADD +</button>
+                </div>
+            </div>
+        </article>
+
+    </section>
+
+    <p class="menu-note">
+        Menu prices and ratings are sample values for this demo.
+        Images require an internet connection and may depend on the image host.
+    </p>
+
+</main>
+
+<footer>
+    Made with <span>&hearts;</span> by FoodieGo | Fresh food, delivered with love.
+</footer>
+
+</body>
+</html>
+head>
+<body>
+
+</body>
+</html>
